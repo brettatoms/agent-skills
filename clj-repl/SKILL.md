@@ -1,5 +1,5 @@
 ---
-name: clojure-repl
+name: clj-repl
 description: Interact with running Clojure REPLs via nREPL. Evaluate code, query namespaces, test functions, and debug live systems using clj-nrepl-eval CLI tool.
 ---
 
