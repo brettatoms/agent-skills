@@ -50,7 +50,7 @@ clj-nrepl-eval --discover-ports
 ```bash
 clj-kondo --lint src components bases \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.name == "my-function")'
+  | jq '(.analysis.var_definitions // [])[] | select(.name == "my-function")'
 ```
 
 ### Find Symbol Usages
@@ -58,7 +58,7 @@ clj-kondo --lint src components bases \
 ```bash
 clj-kondo --lint src components bases \
   --config '{:output {:format :json}, :analysis {:var-usages true}}' \
-  | jq '.analysis.var_usages[] | select(.name == "my-function")'
+  | jq '(.analysis.var_usages // [])[] | select(.name == "my-function")'
 ```
 
 ### List Symbols in File
@@ -66,7 +66,7 @@ clj-kondo --lint src components bases \
 ```bash
 clj-kondo --lint path/to/file.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions'
+  | jq '.analysis.var_definitions // []'
 ```
 
 ### Output Fields
@@ -107,12 +107,12 @@ clj-nrepl-eval -p PORT "(clojure.repl/apropos \"pattern\")"
 # Find definition
 clj-kondo --lint . \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.name == "target-fn") | {ns, name, filename, row}'
+  | jq '(.analysis.var_definitions // [])[] | select(.name == "target-fn") | {ns, name, filename, row}'
 
 # Find all usages
 clj-kondo --lint . \
   --config '{:output {:format :json}, :analysis {:var-usages true}}' \
-  | jq '.analysis.var_usages[] | select(.name == "target-fn") | {from, from_var, filename, row}'
+  | jq '(.analysis.var_usages // [])[] | select(.name == "target-fn") | {from, from_var, filename, row}'
 ```
 
 ## Additional References

@@ -24,12 +24,12 @@ clj-kondo --lint path --config '{
 # Search entire project
 clj-kondo --lint src components bases \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.name == "my-function")'
+  | jq '(.analysis.var_definitions // [])[] | select(.name == "my-function")'
 
 # Search with namespace filter
 clj-kondo --lint src \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.ns == "my.namespace" and .name == "my-function")'
+  | jq '(.analysis.var_definitions // [])[] | select(.ns == "my.namespace" and .name == "my-function")'
 ```
 
 ## Find Symbol References
@@ -37,7 +37,7 @@ clj-kondo --lint src \
 ```bash
 clj-kondo --lint src components bases \
   --config '{:output {:format :json}, :analysis {:var-usages true}}' \
-  | jq '.analysis.var_usages[] | select(.name == "my-function")'
+  | jq '(.analysis.var_usages // [])[] | select(.name == "my-function")'
 ```
 
 ## Find References to Specific Namespace
@@ -45,7 +45,7 @@ clj-kondo --lint src components bases \
 ```bash
 clj-kondo --lint src \
   --config '{:output {:format :json}, :analysis {:var-usages true}}' \
-  | jq '.analysis.var_usages[] | select(.to == "my.namespace")'
+  | jq '(.analysis.var_usages // [])[] | select(.to == "my.namespace")'
 ```
 
 ## Get Namespace Dependencies
@@ -105,25 +105,25 @@ clj-kondo --lint file.clj --config '{:output {:format :edn}, :analysis {...}}'
 ### Get symbol names
 
 ```bash
-| jq '[.analysis.var_definitions[] | .name]'
+| jq '[(.analysis.var_definitions // [])[] | .name]'
 ```
 
 ### Get symbol with location
 
 ```bash
-| jq '.analysis.var_definitions[] | {name, row, filename}'
+| jq '(.analysis.var_definitions // [])[] | {name, row, filename}'
 ```
 
 ### Filter by defining form
 
 ```bash
-| jq '.analysis.var_definitions[] | select(.defined_by == "clojure.core/defn")'
+| jq '(.analysis.var_definitions // [])[] | select(.defined_by == "clojure.core/defn")'
 ```
 
 ### Filter out private vars
 
 ```bash
-| jq '.analysis.var_definitions[] | select(.private != true)'
+| jq '(.analysis.var_definitions // [])[] | select(.private != true)'
 ```
 
 ## Performance Tips

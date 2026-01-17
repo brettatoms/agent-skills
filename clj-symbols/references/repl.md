@@ -78,7 +78,7 @@ clj-nrepl-eval -p PORT "(clojure.repl/apropos #\"^create\")"
 # Step 1: Get overview via clj-kondo (static)
 clj-kondo --lint path/to/file.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '[.analysis.var_definitions[] | {name, row, fixed_arities, doc}]'
+  | jq '[(.analysis.var_definitions // [])[] | {name, row, fixed_arities, doc}]'
 
 # Step 2: Get detailed metadata via REPL
 clj-nrepl-eval -p PORT "(meta #'ns/interesting-function)"

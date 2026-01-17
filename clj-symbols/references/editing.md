@@ -9,7 +9,7 @@ Use clj-kondo to find symbol locations, then the Edit tool to make changes.
 ```bash
 clj-kondo --lint path/to/file.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.name == "my-function") | {row, col, end_row, end_col}'
+  | jq '(.analysis.var_definitions // [])[] | select(.name == "my-function") | {row, col, end_row, end_col}'
 ```
 
 2. Use the Edit tool to replace content from `row` to `end_row`
@@ -20,7 +20,7 @@ clj-kondo --lint path/to/file.clj \
 # Get location
 clj-kondo --lint src/my/ns.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.name == "process-data")'
+  | jq '(.analysis.var_definitions // [])[] | select(.name == "process-data")'
 
 # Output: {"row": 15, "col": 1, "end_row": 25, "end_col": 2, ...}
 # Then use Edit tool to replace lines 15-25
@@ -38,7 +38,7 @@ clj-kondo --lint src/my/ns.clj \
 # Find function location
 clj-kondo --lint file.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions[] | select(.name == "my-fn") | .row'
+  | jq '(.analysis.var_definitions // [])[] | select(.name == "my-fn") | .row'
 
 # Insert docstring at that row using Edit tool
 ```
@@ -52,7 +52,7 @@ For renaming a symbol across the codebase:
 ```bash
 clj-kondo --lint . \
   --config '{:output {:format :json}, :analysis {:var-definitions true, :var-usages true}}' \
-  | jq '[.analysis.var_definitions[], .analysis.var_usages[]]
+  | jq '[(.analysis.var_definitions // [])[], (.analysis.var_usages // [])[]]
         | .[] | select(.name == "old-name")
         | {file: .filename, row, col, end_col}'
 ```
@@ -104,7 +104,7 @@ When you need to edit multiple symbols, collect all locations first:
 # Get all public function locations in a namespace
 clj-kondo --lint src/my/ns.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '[.analysis.var_definitions[] | select(.defined_by == "clojure.core/defn" and .private != true) | {name, row, end_row}]'
+  | jq '[(.analysis.var_definitions // [])[] | select(.defined_by == "clojure.core/defn" and .private != true) | {name, row, end_row}]'
 ```
 
 Then iterate through the results with the Edit tool.
