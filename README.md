@@ -39,7 +39,9 @@ skill-name/
 
 ## Prerequisites
 
-Most skills require external tools. Install as needed:
+Most skills require external tools: `ripgrep`, `fd`, `ast-grep`, `clj-kondo`, and `gh`. Each skill's SKILL.md has detailed installation instructions for multiple platforms.
+
+If you're on macOS and have Homebrew installed, you can install the tools with the following commands:
 
 ```bash
 # Core tools
