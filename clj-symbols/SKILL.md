@@ -38,19 +38,21 @@ clj-nrepl-eval --discover-ports
 | Task | Tool | Command |
 |------|------|---------|
 | List symbols in file | clj-kondo | `clj-kondo --lint file.clj --config '{...}'` |
-| Find definition | clj-kondo | Filter `var_definitions` by name |
-| Find usages | clj-kondo | Filter `var_usages` by name |
+| Find definition | clj-kondo | Filter `var-definitions` by name |
+| Find usages | clj-kondo | Filter `var-usages` by name |
 | Get var metadata | REPL | `(meta #'ns/var)` |
 | Get source | REPL | `(clojure.repl/source fn)` |
 
 ## Core clj-kondo Commands
+
+**Note:** JSON keys use hyphens (e.g., `var-definitions`), so use bracket notation in jq.
 
 ### Find Symbol Definition
 
 ```bash
 clj-kondo --lint src components bases \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '(.analysis.var_definitions // [])[] | select(.name == "my-function")'
+  | jq '.analysis["var-definitions"][] | select(.name == "my-function")'
 ```
 
 ### Find Symbol Usages
@@ -58,7 +60,7 @@ clj-kondo --lint src components bases \
 ```bash
 clj-kondo --lint src components bases \
   --config '{:output {:format :json}, :analysis {:var-usages true}}' \
-  | jq '(.analysis.var_usages // [])[] | select(.name == "my-function")'
+  | jq '.analysis["var-usages"][] | select(.name == "my-function")'
 ```
 
 ### List Symbols in File
@@ -66,21 +68,21 @@ clj-kondo --lint src components bases \
 ```bash
 clj-kondo --lint path/to/file.clj \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '.analysis.var_definitions // []'
+  | jq '.analysis["var-definitions"]'
 ```
 
 ### Output Fields
 
-**var_definitions:**
-- `filename`, `row`, `col`, `end_row`, `end_col` - Location
+**var-definitions:**
+- `filename`, `row`, `col`, `end-row`, `end-col` - Location
 - `ns`, `name` - Identity
-- `defined_by` - Defining form (e.g., `clojure.core/defn`)
-- `fixed_arities`, `doc`, `private`
+- `defined-by` - Defining form (e.g., `clojure.core/defn`)
+- `fixed-arities`, `doc`, `private`
 
-**var_usages:**
+**var-usages:**
 - `from`, `to` - Source and target namespaces
 - `name`, `arity` - Symbol name and call arity
-- `from_var` - Containing function
+- `from-var` - Containing function
 - `row`, `col` - Location
 
 ## Core REPL Commands
@@ -107,12 +109,20 @@ clj-nrepl-eval -p PORT "(clojure.repl/apropos \"pattern\")"
 # Find definition
 clj-kondo --lint . \
   --config '{:output {:format :json}, :analysis {:var-definitions true}}' \
-  | jq '(.analysis.var_definitions // [])[] | select(.name == "target-fn") | {ns, name, filename, row}'
+  | jq '.analysis["var-definitions"][] | select(.name == "target-fn") | {ns, name, filename, row}'
 
 # Find all usages
 clj-kondo --lint . \
   --config '{:output {:format :json}, :analysis {:var-usages true}}' \
-  | jq '(.analysis.var_usages // [])[] | select(.name == "target-fn") | {from, from_var, filename, row}'
+  | jq '.analysis["var-usages"][] | select(.name == "target-fn") | {from, "from-var", filename, row}'
+```
+
+### Find Usages of a Namespace
+
+```bash
+clj-kondo --lint bases components \
+  --config '{:output {:format :json}, :analysis {:var-usages true}}' \
+  | jq '.analysis["var-usages"][] | select(.to == "my.namespace") | {from, name, filename, row}'
 ```
 
 ## Additional References
