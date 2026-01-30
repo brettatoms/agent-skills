@@ -1,6 +1,6 @@
 ---
-name: clj-symbols
-description: Find and edit Clojure symbols using clj-kondo and REPL introspection. Use when finding Clojure function definitions, var usages, namespace contents, renaming symbols, or replacing function bodies.
+name: clojure-symbols
+description: Find and edit Clojure symbols using clj-kondo and REPL introspection. Use when finding Clojure function definitions, var usages, namespace contents, renaming Clojure symbols, replacing function bodies, or working with .clj/.cljc/.cljs files.
 allowed-tools: Bash, Read, Edit, Task
 ---
 

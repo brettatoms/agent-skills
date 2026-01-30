@@ -1,6 +1,6 @@
 ---
-name: clj-repl
-description: Interact with running Clojure REPLs via nREPL. Evaluate code, query namespaces, test functions, and debug live systems using clj-nrepl-eval CLI tool.
+name: clojure-repl
+description: Interact with running Clojure REPLs via nREPL. Evaluate Clojure code, query namespaces, test functions, and debug live Clojure systems. Use when working with .clj/.cljc/.cljs files and a REPL is available.
 ---
 
 # Clojure REPL Integration
