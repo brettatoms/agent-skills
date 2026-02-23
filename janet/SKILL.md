@@ -14,6 +14,25 @@ This skill guides the generation of idiomatic Janet code covering functional pat
 - Use imperative/mutable approaches only when performance demands it (large collections, hot paths, string building)
 - When mutation is used for performance, document why and keep scope limited
 
+### Prefer `let` Over Sequential `def`
+Use `let` to group related bindings instead of sequential `def` statements:
+```janet
+# Good - let groups bindings clearly
+(defn process [data]
+  (let [items (data :items)
+        count (length items)
+        filtered (filter valid? items)]
+    (map transform filtered)))
+
+# Avoid - sequential defs
+(defn process [data]
+  (def items (data :items))
+  (def count (length items))
+  (def filtered (filter valid? items))
+  (map transform filtered))
+```
+Reserve `def` for top-level definitions and cases where bindings are interspersed with side effects or control flow that makes `let` awkward.
+
 ### Prefer Immutability (When Practical)
 - Use `def` for immutable bindings instead of `var`
 - Favor pure functions without side effects
@@ -609,6 +628,7 @@ original                      # => @[1 2 3 4] (unchanged)
 ## Code Review Checklist
 
 When generating or reviewing Janet code, verify:
+- [ ] `let` used for grouped bindings instead of sequential `def`s
 - [ ] `[...]` used for tuples (immutable), `@[...]` for arrays (mutable)
 - [ ] `{...}` used for structs (immutable), `@{...}` for tables (mutable)
 - [ ] String building uses `buffer` for multiple concatenations, not repeated `string`
