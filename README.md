@@ -9,6 +9,7 @@ A collection of skills for AI coding agents.
 - **Browser**: Automate browsers for testing or scraping (`playwright`, `browser-tools`)
 - **GitHub**: Manage PRs, issues, Actions, releases (`github`)
 - **Docs**: Fetch library documentation on demand (`lib-docs`)
+- **Planning**: Read and write numbered plan files (`plans`)
 
 ### Skills
 
@@ -21,6 +22,7 @@ A collection of skills for AI coding agents.
 - **[playwright](playwright/)** — Browser automation via Playwright server. Navigate, click, fill forms, screenshot.
 - **[browser-tools](browser-tools/)** — Chrome automation via Puppeteer/CDP. Element picker, JS eval, content extraction. (from [pi-skills](https://github.com/badlogic/pi-skills))
 - **[lib-docs](lib-docs/)** — Fetch library documentation via web search.
+- **[plans](plans/)** — Read and write numbered plan files in repos with a `plans/` directory and an index. Conventions for numbering, frontmatter, statuses, and artifacts.
 - **[skill-creator](skill-creator/)** — Create new skills. (from [anthropics/skills](https://github.com/anthropics/skills), Claude-specific)
 
 ## Installation
