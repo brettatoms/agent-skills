@@ -407,6 +407,32 @@ Keywords and symbols look similar but behave differently:
 (= :foo 'foo)                 # => false
 ```
 
+### `in` Returns the Value, Not a Boolean
+`(in tbl key)` returns the **value** at `key`, not a boolean indicating presence.
+This is a trap when the stored value is `false` or `nil`:
+```janet
+(def m @{:enabled false :count 0})
+
+# WRONG — (in m :enabled) returns false, so this falls through!
+(if (in m :enabled)
+  (m :enabled)       # never reached when value is false
+  :default)          # => :default (BUG!)
+
+# CORRECT — use has-key? to check presence
+(if (has-key? m :enabled)
+  (m :enabled)       # => false (correct!)
+  :default)
+
+# This is especially dangerous in toggle/collapse patterns:
+(def collapsed @{:section-a false})
+(if (in collapsed :section-a)
+  (collapsed :section-a)    # never reached — "in" returned false
+  true)                     # => true (BUG — ignores the stored value)
+```
+**Rule:** Use `has-key?` when checking if a key exists. Use `in`/`get` only
+when you know the value won't be `false` or `nil`, or when you want
+nil-as-missing semantics.
+
 ### Nil Punning in Collections
 `nil` values in tables/structs disappear:
 ```janet
@@ -623,6 +649,15 @@ original                      # => @[1 2 3 4] (unchanged)
 # Position vs capture
 (peg/match '(* "a" (position)) "abc")    # => @[1]
 (peg/match '(* "a" (capture "b")) "abc") # => @["b"]
+
+# DANGER: nil return from replacement drops the capture entirely!
+# If a :replace or :/ callback returns nil, the capture is DROPPED.
+(peg/match ~(/ "null" ,(fn [_] nil)) "null")  # => @[]  (empty! nil was dropped)
+
+# Use a sentinel value instead:
+(def my-nil :sentinel/nil)
+(peg/match ~(/ "null" ,(fn [_] my-nil)) "null")  # => @[:sentinel/nil]
+# Then unwrap sentinels back to nil in post-processing.
 ```
 
 ## Code Review Checklist
@@ -637,5 +672,7 @@ When generating or reviewing Janet code, verify:
 - [ ] Short-fn `|` syntax used for simple lambdas
 - [ ] Destructuring used in function parameters where clear
 - [ ] `deep=` used for structural comparison, not `=`
+- [ ] `has-key?` used instead of `in` when value may be `false` or `nil`
+- [ ] PEG replacement functions never return `nil` (use sentinel values)
 - [ ] `loop` uses correct verb syntax (`:range`, `:in`, `:keys`, etc.)
 - [ ] Mutation scope is limited and intentional
